@@ -63,7 +63,7 @@ func NewKvmsg(sequence int64) (kvmsg *Kvmsg) {
 	return
 }
 
-//  The RecvKvmsg function reads a key-value message from socket, and returns a new
+//  function reads a key-value message from socket, and returns a new
 //  Kvmsg instance.
 func RecvKvmsg(socket *zmq.Socket) (kvmsg *Kvmsg, err error) {
 	kvmsg = &Kvmsg{
@@ -91,7 +91,7 @@ func (kvmsg *Kvmsg) Send(socket *zmq.Socket) (err error) {
 	return
 }
 
-//  The Dup method duplicates a kvmsg instance, returns the new instance.
+//  method duplicates a kvmsg instance, returns the new instance.
 func (kvmsg *Kvmsg) Dup() (dup *Kvmsg) {
 	dup = &Kvmsg{
 		present: make([]bool, kvmsg_FRAMES),
@@ -104,7 +104,7 @@ func (kvmsg *Kvmsg) Dup() (dup *Kvmsg) {
 	return
 }
 
-//  Return key from last read message, if any, else NULL
+//  GetKey returns key from last read message, if any, else NULL
 func (kvmsg *Kvmsg) GetKey() (key string, err error) {
 	if !kvmsg.present[frame_KEY] {
 		err = errors.New("Key not set")
@@ -190,7 +190,7 @@ func (kvmsg *Kvmsg) SetUuid() {
 
 }
 
-// Get message property, return error if no such property is defined.
+// GetProp gets message property, return error if no such property is defined.
 func (kvmsg *Kvmsg) GetProp(name string) (value string, err error) {
 	if !kvmsg.present[frame_PROPS] {
 		err = errors.New("No properties set")

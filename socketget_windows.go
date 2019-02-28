@@ -16,6 +16,9 @@ import (
 ZMQ_FD: Retrieve file descriptor associated with the socket
 
 See: http://api.zeromq.org/3-2:zmq-getsockopt#toc23
+*/ZMQ_FD: Retrieve file descriptor associated with the socket
+
+See: http://api.zeromq.org/3-2:zmq-getsockopt#toc23
 */
 func (soc *Socket) GetFd() (uintptr, error) {
 	value := C.SOCKET(0)

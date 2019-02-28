@@ -36,6 +36,15 @@ Example:
     reactor.AddSocket(socket2, zmq.POLLIN, socket2_handler)
     reactor.AddChannelTime(time.Tick(time.Second), 1, ticker_handler)
     reactor.Run(time.Second)
+*/Create a reactor to mix the handling of sockets and channels (timers or other channels).
+
+Example:
+
+    reactor := zmq.NewReactor()
+    reactor.AddSocket(socket1, zmq.POLLIN, socket1_handler)
+    reactor.AddSocket(socket2, zmq.POLLIN, socket2_handler)
+    reactor.AddChannelTime(time.Tick(time.Second), 1, ticker_handler)
+    reactor.Run(time.Second)
 */
 func NewReactor() *Reactor {
 	r := &Reactor{
@@ -47,7 +56,7 @@ func NewReactor() *Reactor {
 	return r
 }
 
-// Add socket handler to the reactor.
+// AddSocket adds socket handler to the reactor.
 //
 // You can have only one handler per socket. Adding a second one will remove the first.
 //
@@ -58,7 +67,7 @@ func (r *Reactor) AddSocket(soc *Socket, events State, handler func(State) error
 	r.p.Add(soc, events)
 }
 
-// Remove a socket handler from the reactor.
+// RemoveSocket removes a socket handler from the reactor.
 func (r *Reactor) RemoveSocket(soc *Socket) {
 	if _, ok := r.sockets[soc]; ok {
 		delete(r.sockets, soc)
@@ -70,7 +79,7 @@ func (r *Reactor) RemoveSocket(soc *Socket) {
 	}
 }
 
-// Add channel handler to the reactor.
+// AddChannel adds channel handler to the reactor.
 //
 // Returns id of added handler, that can be used later to remove it.
 //
@@ -101,7 +110,7 @@ func (r *Reactor) AddChannelTime(ch <-chan time.Time, limit int, handler func(in
 	return r.AddChannel(ch2, limit, handler)
 }
 
-// Remove a channel from the reactor.
+// RemoveChannel removes a channel from the reactor.
 //
 // Closed channels are removed automatically.
 func (r *Reactor) RemoveChannel(id uint64) {

@@ -13,6 +13,14 @@ Any other part that isn't a `string' or `[]byte' is converted
 to `string' with `fmt.Sprintf("%v", part)'.
 
 Returns total bytes sent.
+*/Send multi-part message on socket.
+
+Any `[]string' or `[][]byte' is split into separate `string's or `[]byte's
+
+Any other part that isn't a `string' or `[]byte' is converted
+to `string' with `fmt.Sprintf("%v", part)'.
+
+Returns total bytes sent.
 */
 func (soc *Socket) SendMessage(parts ...interface{}) (total int, err error) {
 	return soc.sendMessage(0, parts...)
@@ -20,6 +28,7 @@ func (soc *Socket) SendMessage(parts ...interface{}) (total int, err error) {
 
 /*
 Like SendMessage(), but adding the DONTWAIT flag.
+*/Like SendMessage(), but adding the DONTWAIT flag.
 */
 func (soc *Socket) SendMessageDontwait(parts ...interface{}) (total int, err error) {
 	return soc.sendMessage(DONTWAIT, parts...)
@@ -108,6 +117,9 @@ PARTS:
 Receive parts as message from socket.
 
 Returns last non-nil error code.
+*/Receive parts as message from socket.
+
+Returns last non-nil error code.
 */
 func (soc *Socket) RecvMessage(flags Flag) (msg []string, err error) {
 	msg = make([]string, 0)
@@ -132,6 +144,9 @@ func (soc *Socket) RecvMessage(flags Flag) (msg []string, err error) {
 
 /*
 Receive parts as message from socket.
+
+Returns last non-nil error code.
+*/Receive parts as message from socket.
 
 Returns last non-nil error code.
 */

@@ -53,7 +53,7 @@ func errget(err error) error {
 	return err
 }
 
-// Return Errno as string.
+// Error returns Errno as string.
 func (errno Errno) Error() string {
 	if errno >= C.ZMQ_HAUSNUMERO {
 		return C.GoString(C.zmq_strerror(C.int(errno)))
@@ -63,6 +63,25 @@ func (errno Errno) Error() string {
 
 /*
 Convert error to Errno.
+
+Example usage:
+
+    switch AsErrno(err) {
+
+    case zmq.Errno(syscall.EINTR):
+        // standard system error
+
+        // call was interrupted
+
+    case zmq.ETERM:
+        // error defined by ZeroMQ
+
+        // context was terminated
+
+    }
+
+See also: examples/interrupt.go
+*/Convert error to Errno.
 
 Example usage:
 

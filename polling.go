@@ -93,7 +93,7 @@ func (p *Poller) Remove(id int) error {
 	return ErrorNoSocket
 }
 
-// Remove a socket from the poller
+// RemoveBySocket removes a socket from the poller
 //
 // Returns ErrorNoSocket if the socket didn't match
 func (p *Poller) RemoveBySocket(soc *Socket) error {
@@ -131,6 +131,31 @@ Example:
             }
         }
     }
+*/Input/output multiplexing
+
+If timeout < 0, wait forever until a matching event is detected
+
+Only sockets with matching socket events are returned in the list.
+
+Example:
+
+    poller := zmq.NewPoller()
+    poller.Add(socket0, zmq.POLLIN)
+    poller.Add(socket1, zmq.POLLIN)
+    //  Process messages from both sockets
+    for {
+        sockets, _ := poller.Poll(-1)
+        for _, socket := range sockets {
+            switch s := socket.Socket; s {
+            case socket0:
+                msg, _ := s.Recv(0)
+                //  Process msg
+            case socket1:
+                msg, _ := s.Recv(0)
+                //  Process msg
+            }
+        }
+    }
 */
 func (p *Poller) Poll(timeout time.Duration) ([]Polled, error) {
 	return p.poll(timeout, false)
@@ -138,6 +163,14 @@ func (p *Poller) Poll(timeout time.Duration) ([]Polled, error) {
 
 /*
 This is like (*Poller)Poll, but it returns a list of all sockets,
+in the same order as they were added to the poller,
+not just those sockets that had an event.
+
+For each socket in the list, you have to check the Events field
+to see if there was actually an event.
+
+When error is not nil, the return list contains no sockets.
+*/This is like (*Poller)Poll, but it returns a list of all sockets,
 in the same order as they were added to the poller,
 not just those sockets that had an event.
 

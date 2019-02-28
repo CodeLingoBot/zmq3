@@ -37,7 +37,7 @@ func NewKvmsg(sequence int64) (kvmsg *Kvmsg) {
 	return
 }
 
-//  The RecvKvmsg function reads a key-value message from socket, and returns a new
+//  function reads a key-value message from socket, and returns a new
 //  Kvmsg instance.
 func RecvKvmsg(socket *zmq.Socket) (kvmsg *Kvmsg, err error) {
 	kvmsg = &Kvmsg{

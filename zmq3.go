@@ -84,7 +84,7 @@ func init() {
 
 //. Util
 
-// Report 0MQ library version.
+// Version reports 0MQ library version.
 func Version() (major, minor, patch int) {
 	if initVersionError != nil {
 		return 0, 0, 0
@@ -94,7 +94,7 @@ func Version() (major, minor, patch int) {
 	return int(maj), int(min), int(pat)
 }
 
-// Get 0MQ error message string.
+// Error gets 0MQ error message string.
 func Error(e int) string {
 	return C.GoString(C.zmq_strerror(C.int(e)))
 }
@@ -132,6 +132,9 @@ func NewContext() (ctx *Context, err error) {
 Terminates the default context.
 
 For linger behavior, see: http://api.zeromq.org/3-2:zmq-ctx-destroy
+*/Terminates the default context.
+
+For linger behavior, see: http://api.zeromq.org/3-2:zmq-ctx-destroy
 */
 func Term() error {
 	if initVersionError != nil {
@@ -145,6 +148,9 @@ func Term() error {
 
 /*
 Terminates the context.
+
+For linger behavior, see: http://api.zeromq.org/3-2:zmq-ctx-destroy
+*/Terminates the context.
 
 For linger behavior, see: http://api.zeromq.org/3-2:zmq-ctx-destroy
 */
@@ -171,7 +177,7 @@ func getOption(ctx *Context, o C.int) (int, error) {
 	return n, nil
 }
 
-// Returns the size of the 0MQ thread pool in the default context.
+// GetIoThreads returns the size of the 0MQ thread pool in the default context.
 func GetIoThreads() (int, error) {
 	if initVersionError != nil {
 		return 0, initVersionError
@@ -182,12 +188,12 @@ func GetIoThreads() (int, error) {
 	return defaultCtx.GetIoThreads()
 }
 
-// Returns the size of the 0MQ thread pool.
+// GetIoThreads returns the size of the 0MQ thread pool.
 func (ctx *Context) GetIoThreads() (int, error) {
 	return getOption(ctx, C.ZMQ_IO_THREADS)
 }
 
-// Returns the maximum number of sockets allowed in the default context.
+// GetMaxSockets returns the maximum number of sockets allowed in the default context.
 func GetMaxSockets() (int, error) {
 	if initVersionError != nil {
 		return 0, initVersionError
@@ -198,7 +204,7 @@ func GetMaxSockets() (int, error) {
 	return defaultCtx.GetMaxSockets()
 }
 
-// Returns the maximum number of sockets allowed.
+// GetMaxSockets returns the maximum number of sockets allowed.
 func (ctx *Context) GetMaxSockets() (int, error) {
 	return getOption(ctx, C.ZMQ_MAX_SOCKETS)
 }
@@ -216,6 +222,12 @@ func setOption(ctx *Context, o C.int, n int) error {
 
 /*
 Specifies the size of the 0MQ thread pool to handle I/O operations in
+the default context. If your application is using only the inproc
+transport for messaging you may set this to zero, otherwise set it to at
+least one. This option only applies before creating any sockets.
+
+Default value: 1
+*/Specifies the size of the 0MQ thread pool to handle I/O operations in
 the default context. If your application is using only the inproc
 transport for messaging you may set this to zero, otherwise set it to at
 least one. This option only applies before creating any sockets.
@@ -239,6 +251,12 @@ may set this to zero, otherwise set it to at least one. This option only
 applies before creating any sockets.
 
 Default value: 1
+*/Specifies the size of the 0MQ thread pool to handle I/O operations. If
+your application is using only the inproc transport for messaging you
+may set this to zero, otherwise set it to at least one. This option only
+applies before creating any sockets.
+
+Default value: 1
 */
 func (ctx *Context) SetIoThreads(n int) error {
 	return setOption(ctx, C.ZMQ_IO_THREADS, n)
@@ -246,6 +264,9 @@ func (ctx *Context) SetIoThreads(n int) error {
 
 /*
 Sets the maximum number of sockets allowed in the default context.
+
+Default value: 1024
+*/Sets the maximum number of sockets allowed in the default context.
 
 Default value: 1024
 */
@@ -261,6 +282,9 @@ func SetMaxSockets(n int) error {
 
 /*
 Sets the maximum number of sockets allowed.
+
+Default value: 1024
+*/Sets the maximum number of sockets allowed.
 
 Default value: 1024
 */
@@ -291,6 +315,7 @@ const (
 
 /*
 Socket type as string.
+*/Socket type as string.
 */
 func (t Type) String() string {
 	switch t {
@@ -333,6 +358,7 @@ const (
 
 /*
 Socket flag as string.
+*/Socket flag as string.
 */
 func (f Flag) String() string {
 	ff := make([]string, 0)
@@ -369,6 +395,7 @@ const (
 
 /*
 Socket event as string.
+*/Socket event as string.
 */
 func (e Event) String() string {
 	if e == EVENT_ALL {
@@ -423,6 +450,7 @@ const (
 
 /*
 Socket state as string.
+*/Socket state as string.
 */
 func (s State) String() string {
 	ss := make([]string, 0)
@@ -451,6 +479,7 @@ type Socket struct {
 
 /*
 Socket as string.
+*/Socket as string.
 */
 func (soc Socket) String() string {
 	if !soc.opened {
@@ -475,6 +504,13 @@ The Socket is not thread safe. This means that you cannot access the same Socket
 from different goroutines without using something like a mutex.
 
 For a description of socket types, see: http://api.zeromq.org/3-2:zmq-socket#toc3
+*/Create 0MQ socket in the default context.
+
+WARNING:
+The Socket is not thread safe. This means that you cannot access the same Socket
+from different goroutines without using something like a mutex.
+
+For a description of socket types, see: http://api.zeromq.org/3-2:zmq-socket#toc3
 */
 func NewSocket(t Type) (soc *Socket, err error) {
 	if initVersionError != nil {
@@ -488,6 +524,13 @@ func NewSocket(t Type) (soc *Socket, err error) {
 
 /*
 Create 0MQ socket in the given context.
+
+WARNING:
+The Socket is not thread safe. This means that you cannot access the same Socket
+from different goroutines without using something like a mutex.
+
+For a description of socket types, see: http://api.zeromq.org/3-2:zmq-socket#toc3
+*/Create 0MQ socket in the given context.
 
 WARNING:
 The Socket is not thread safe. This means that you cannot access the same Socket
@@ -526,7 +569,7 @@ func (soc *Socket) Close() error {
 	return soc.err
 }
 
-// Return the context associated with a socket
+// Context returns the context associated with a socket
 func (soc *Socket) Context() (*Context, error) {
 	if !soc.opened {
 		return nil, ErrorSocketClosed
@@ -536,6 +579,9 @@ func (soc *Socket) Context() (*Context, error) {
 
 /*
 Accept incoming connections on a socket.
+
+For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-bind#toc2
+*/Accept incoming connections on a socket.
 
 For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-bind#toc2
 */
@@ -555,6 +601,9 @@ func (soc *Socket) Bind(endpoint string) error {
 Stop accepting connections on a socket.
 
 For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-bind#toc2
+*/Stop accepting connections on a socket.
+
+For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-bind#toc2
 */
 func (soc *Socket) Unbind(endpoint string) error {
 	if !soc.opened {
@@ -570,6 +619,9 @@ func (soc *Socket) Unbind(endpoint string) error {
 
 /*
 Create outgoing connection from socket.
+
+For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-connect#toc2
+*/Create outgoing connection from socket.
 
 For a description of endpoint, see: http://api.zeromq.org/3-2:zmq-connect#toc2
 */
@@ -606,6 +658,9 @@ func (soc *Socket) Disconnect(endpoint string) error {
 Receive a message part from a socket.
 
 For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
+*/Receive a message part from a socket.
+
+For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
 */
 func (soc *Socket) Recv(flags Flag) (string, error) {
 	b, err := soc.RecvBytes(flags)
@@ -614,6 +669,9 @@ func (soc *Socket) Recv(flags Flag) (string, error) {
 
 /*
 Receive a message part from a socket.
+
+For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
+*/Receive a message part from a socket.
 
 For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
 */
@@ -652,6 +710,9 @@ func (soc *Socket) Send(data string, flags Flag) (int, error) {
 Send a message part on a socket.
 
 For a description of flags, see: http://api.zeromq.org/3-2:zmq-send#toc2
+*/Send a message part on a socket.
+
+For a description of flags, see: http://api.zeromq.org/3-2:zmq-send#toc2
 */
 func (soc *Socket) SendBytes(data []byte, flags Flag) (int, error) {
 	if !soc.opened {
@@ -670,6 +731,71 @@ func (soc *Socket) SendBytes(data []byte, flags Flag) (int, error) {
 
 /*
 Register a monitoring callback.
+
+See: http://api.zeromq.org/3-2:zmq-socket-monitor#toc2
+
+WARNING: Closing a context with a monitoring callback will lead to random crashes.
+This is a bug in the ZeroMQ library.
+The monitoring callback has the same context as the socket it was created for.
+
+Example:
+
+    package main
+
+    import (
+        zmq "github.com/pebbe/zmq3"
+        "log"
+        "time"
+    )
+
+    func rep_socket_monitor(addr string) {
+        s, err := zmq.NewSocket(zmq.PAIR)
+        if err != nil {
+            log.Fatalln(err)
+        }
+        err = s.Connect(addr)
+        if err != nil {
+            log.Fatalln(err)
+        }
+        for {
+            a, b, c, err := s.RecvEvent(0)
+            if err != nil {
+                log.Println(err)
+                break
+            }
+            log.Println(a, b, c)
+        }
+        s.Close()
+    }
+
+    func main() {
+
+        // REP socket
+        rep, err := zmq.NewSocket(zmq.REP)
+        if err != nil {
+            log.Fatalln(err)
+        }
+
+        // REP socket monitor, all events
+        err = rep.Monitor("inproc://monitor.rep", zmq.EVENT_ALL)
+        if err != nil {
+            log.Fatalln(err)
+        }
+        go rep_socket_monitor("inproc://monitor.rep")
+
+        // Generate an event
+        rep.Bind("tcp://*:5555")
+        if err != nil {
+            log.Fatalln(err)
+        }
+
+        // Allow some time for event detection
+        time.Sleep(time.Second)
+
+        rep.Close()
+        zmq.Term()
+    }
+*/Register a monitoring callback.
 
 See: http://api.zeromq.org/3-2:zmq-socket-monitor#toc2
 
@@ -762,6 +888,13 @@ For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
 For a description of event_type, see: http://api.zeromq.org/3-2:zmq-socket-monitor#toc2
 
 For an example, see: func (*Socket) Monitor
+*/Receive a message part from a socket interpreted as an event.
+
+For a description of flags, see: http://api.zeromq.org/3-2:zmq-msg-recv#toc2
+
+For a description of event_type, see: http://api.zeromq.org/3-2:zmq-socket-monitor#toc2
+
+For an example, see: func (*Socket) Monitor
 */
 func (soc *Socket) RecvEvent(flags Flag) (event_type Event, addr string, value int, err error) {
 	if !soc.opened {
@@ -800,6 +933,9 @@ func (soc *Socket) RecvEvent(flags Flag) (event_type Event, addr string, value i
 
 /*
 Start built-in ØMQ proxy
+
+See: http://api.zeromq.org/3-2:zmq-proxy
+*/Proxy starts built-in ØMQ proxy
 
 See: http://api.zeromq.org/3-2:zmq-proxy
 */
